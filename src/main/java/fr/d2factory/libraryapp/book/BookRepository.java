@@ -4,29 +4,40 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The book repository emulates a database via 2 HashMaps
  */
 public class BookRepository {
-    private Map<ISBN, Book> availableBooks = new HashMap<>();
-    private Map<Book, LocalDate> borrowedBooks = new HashMap<>();
 
-    public void addBooks(List<Book> books){
-        //TODO implement the missing feature
-    }
+	// We will consider that ISBN identifies at the same time the book and the copy
+	// as mentioned in the exercise description
+	private Map<ISBN, Book> availableBooks = new HashMap<>();
+	private Map<Book, LocalDate> borrowedBooks = new HashMap<>();
 
-    public Book findBook(long isbnCode) {
-        //TODO implement the missing feature
-        return null;
-    }
+	public void addBooks(List<Book> books) {
+		if (books == null) {
+			throw new IllegalArgumentException("books parameter is null");
+		}
+		Map<ISBN, Book> newBookMap = books.stream().collect(Collectors.toMap(Book::getIsbn, book -> book));
+		availableBooks = Stream.concat(availableBooks.entrySet().stream(), newBookMap.entrySet().stream())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldBook, newBook) -> newBook));
+	}
 
-    public void saveBookBorrow(Book book, LocalDate borrowedAt){
-        //TODO implement the missing feature
-    }
+	public Book findBook(long isbnCode) {
+		return availableBooks.get(new ISBN(isbnCode));
+	}
 
-    public LocalDate findBorrowedBookDate(Book book) {
-        //TODO implement the missing feature
-        return null;
-    }
+	public void saveBookBorrow(Book book, LocalDate borrowedAt) {
+		if (book == null || borrowedAt == null) {
+			throw new IllegalArgumentException("Either book parameter or borowedAt parameter is null");
+		}
+		borrowedBooks.putIfAbsent(book, borrowedAt);
+	}
+
+	public LocalDate findBorrowedBookDate(Book book) {
+		return borrowedBooks.get(book);
+	}
 }
