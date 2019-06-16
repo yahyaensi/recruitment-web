@@ -97,7 +97,7 @@ public class LibraryTest {
 	}
 
 	@Test
-	public void students_pay_10_cents_the_first_30days() {
+	public void students_not_in_1st_year_pay_10_cents_the_first_30days() {
 		Long isbn = 968787565445l;
 		int borrowingDays = 30;
 		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
@@ -105,8 +105,22 @@ public class LibraryTest {
 		Member studentMember = new StudentMember(false, initialWallet);
 		Book borrowedBook = library.borrowBook(isbn, studentMember, borrowingDate);
 		library.returnBook(borrowedBook, studentMember);
-		assertEquals("Student payed 10 cents the first 30 days",
+		assertEquals("Student not in 1st year payed 10 cents the first 30 days",
 				new BigDecimal("7.0"),
+				studentMember.getWallet());
+	}
+	
+	@Test
+	public void students_not_in_1st_year_pay_15cents_for_each_day_they_keep_a_book_after_the_initial_30days() {
+		Long isbn = 968787565445l;
+		int borrowingDays = 40;
+		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
+		BigDecimal initialWallet = new BigDecimal("10");
+		Member studentMember = new StudentMember(false, initialWallet);
+		Book borrowedBook = library.borrowBook(isbn, studentMember, borrowingDate);
+		library.returnBook(borrowedBook, studentMember);
+		assertEquals("Student not in 1st year payed 10 cents the first 30 days",
+				new BigDecimal("5.5"),
 				studentMember.getWallet());
 	}
 
@@ -125,8 +139,17 @@ public class LibraryTest {
 	}
 
 	@Test
-	public void students_pay_15cents_for_each_day_they_keep_a_book_after_the_initial_30days() {
-		fail("Implement me");
+	public void students_in_1st_year_pay_15cents_for_each_day_they_keep_a_book_after_the_initial_30days() {
+		Long isbn = 968787565445l;
+		int borrowingDays = 40;
+		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
+		BigDecimal initialWallet = new BigDecimal("10");
+		Member studentMember = new StudentMember(true, initialWallet);
+		Book borrowedBook = library.borrowBook(isbn, studentMember, borrowingDate);
+		library.returnBook(borrowedBook, studentMember);
+		assertEquals("Student in 1st year payed 15 cents for each day he kept the book after the initial 30 days",
+				new BigDecimal("7.0"),
+				studentMember.getWallet());
 	}
 
 	@Test

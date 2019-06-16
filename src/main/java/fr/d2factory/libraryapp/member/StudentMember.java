@@ -19,6 +19,12 @@ public class StudentMember extends Member {
 			} else {
 				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * numberOfDays)));
 			}
+		} else {
+			if (isFirstYear) {
+				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * 15 + 0.15 * (numberOfDays - 30))));
+			} else {
+				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * 30 + 0.15 * (numberOfDays - 30))));
+			}
 		}
 		
 	}
