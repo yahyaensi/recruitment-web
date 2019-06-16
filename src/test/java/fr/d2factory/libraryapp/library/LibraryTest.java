@@ -151,6 +151,18 @@ public class LibraryTest {
 				new BigDecimal("7.0"),
 				studentMember.getWallet());
 	}
+	
+	@Test
+	public void returned_book_can_be_borrowed_again() {
+		Long isbn = 968787565445l;
+		LocalDate borrowingDate = LocalDate.now();
+		Member member = new ResidentMember(new BigDecimal("10"));
+		Book book = library.borrowBook(isbn, member, borrowingDate.minusDays(10));
+		library.returnBook(book, member);
+		Book bookBorrowedAgain = library.borrowBook(isbn, member, borrowingDate);
+		assertNotNull("The book exists in the library and it's borrowed", bookBorrowedAgain);
+		assertEquals("The returned book has the demanded isbn", 968787565445l, bookBorrowedAgain.getIsbn().getIsbnCode());
+	}
 
 	@Test
 	public void members_cannot_borrow_book_if_they_have_late_books() {

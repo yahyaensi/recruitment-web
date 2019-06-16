@@ -29,6 +29,14 @@ public class BookRepository {
 	public Book findBook(long isbnCode) {
 		return availableBooks.get(new ISBN(isbnCode));
 	}
+	
+	public void removeBookBorrow(Book book) {
+		if (book == null) {
+			throw new IllegalArgumentException("Book parameter is null");
+		}
+		availableBooks.putIfAbsent(book.getIsbn(), book);
+		borrowedBooks.remove(book);
+	}
 
 	public void saveBookBorrow(Book book, LocalDate borrowedAt) {
 		if (book == null || borrowedAt == null) {

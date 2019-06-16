@@ -32,7 +32,7 @@ public class LibraryImpl implements Library {
 	public void returnBook(Book book, Member member) {
 		LocalDate borrowingDate = bookRepository.findBorrowedBookDate(book);
 		member.payBook((int)Duration.between(borrowingDate.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays());
-		
+		bookRepository.removeBookBorrow(book);
 	}
 
 }
