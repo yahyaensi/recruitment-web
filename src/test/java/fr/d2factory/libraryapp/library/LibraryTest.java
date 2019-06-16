@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 
 import fr.d2factory.libraryapp.book.Book;
 import fr.d2factory.libraryapp.book.BookRepository;
+import fr.d2factory.libraryapp.library.exception.BookIsNotAvailableException;
 import fr.d2factory.libraryapp.library.impl.LibraryImpl;
 import fr.d2factory.libraryapp.member.Member;
 import fr.d2factory.libraryapp.member.StudentMember;
@@ -42,29 +43,28 @@ public class LibraryTest {
 		bookRepository.addBooks(bookList);
 		
 		library = new LibraryImpl(bookRepository);
-
-
 	}
 
 	@Test
 	public void member_can_borrow_a_book_if_book_is_available() {
-		Member member = new StudentMember();
-		Book book = library.borrowBook(968787565445l, member, LocalDate.now());
-		assertNotNull("The book exists in the library", book);
-		assertEquals("The returned book has the demanded isbn", 968787565445l, book.getIsbn().getIsbnCode());
-	}
-
-	@Test
-	public void borrowed_book_is_no_longer_available() {
 		Long isbn = 968787565445l;
 		LocalDate borrowingDate = LocalDate.now();
 		Member member = new StudentMember();
 		Book book = library.borrowBook(isbn, member, borrowingDate);
-		assertNotNull("The book was borrowed", book);
+		assertNotNull("The book exists in the library and it's borrowed", book);
+		assertEquals("The returned book has the demanded isbn", 968787565445l, book.getIsbn().getIsbnCode());
 		Book unavailableBook = bookRepository.findBook(isbn);
 		assertNull("The book was removed from available book list", unavailableBook);
 		LocalDate bookBorrowingDate = bookRepository.findBorrowedBookDate(book);
 		assertEquals("The book was moved to barrowed book list", borrowingDate, bookBorrowingDate);
+	}
+
+	@Test(expected=BookIsNotAvailableException.class)
+	public void borrowed_book_is_no_longer_available() {
+		Long isbn = 968787565445l;
+		Member member = new StudentMember();
+		library.borrowBook(isbn, member, LocalDate.now());
+		library.borrowBook(isbn, member, LocalDate.now());
 	}
 
 	@Test

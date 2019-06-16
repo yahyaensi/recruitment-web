@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import fr.d2factory.libraryapp.book.Book;
 import fr.d2factory.libraryapp.book.BookRepository;
 import fr.d2factory.libraryapp.library.Library;
+import fr.d2factory.libraryapp.library.exception.BookIsNotAvailableException;
 import fr.d2factory.libraryapp.library.exception.HasLateBooksException;
 import fr.d2factory.libraryapp.member.Member;
 
@@ -19,9 +20,10 @@ public class LibraryImpl implements Library {
 	@Override
 	public Book borrowBook(long isbnCode, Member member, LocalDate borrowedAt) throws HasLateBooksException {
 		Book book = bookRepository.findBook(isbnCode);
-		if (book != null) {
-			bookRepository.saveBookBorrow(book, borrowedAt);
+		if (book == null) {
+			throw new BookIsNotAvailableException();
 		}
+		bookRepository.saveBookBorrow(book, borrowedAt);
 		return book;
 	}
 
