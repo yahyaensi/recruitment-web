@@ -16,8 +16,8 @@ import fr.d2factory.libraryapp.member.Member;
  */
 public class BookRepository {
 
-	// We will consider that ISBN identifies at the same time the book and the copy
-	// as mentioned in the exercise description
+	// We will consider that ISBN identifies at the same time
+	// the book and the copy as mentioned in the exercise description
 	private Map<ISBN, Book> availableBooks = new HashMap<>();
 	private Map<ISBN, Triplet<Member, Book, LocalDate>> borrowedBooks = new HashMap<>();
 
@@ -33,38 +33,36 @@ public class BookRepository {
 	public Book findBook(long isbnCode) {
 		return availableBooks.get(new ISBN(isbnCode));
 	}
-	
+
 	public void removeBookBorrow(Book book) {
 		if (book == null) {
-			throw new IllegalArgumentException("Book parameter is null");
+			throw new IllegalArgumentException("book parameter is null");
 		}
 		availableBooks.putIfAbsent(book.getIsbn(), book);
 		borrowedBooks.remove(book.getIsbn());
 	}
 
 	public void saveBookBorrow(Member member, Book book, LocalDate borrowedAt) {
-		if (book == null || borrowedAt == null) {
-			throw new IllegalArgumentException("Either book parameter or borowedAt parameter is null");
+		if (member == null || book == null || borrowedAt == null) {
+			throw new IllegalArgumentException("member parameter, book parameter or borowedAt parameter is null");
 		}
 		borrowedBooks.putIfAbsent(book.getIsbn(), new Triplet<>(member, book, borrowedAt));
 		availableBooks.remove(book.getIsbn());
 	}
 
 	public LocalDate findBorrowedBookDate(Book book) {
-		 Triplet<Member, Book, LocalDate> triplet = borrowedBooks.get(book.getIsbn());
-		 if (triplet != null) {
-			 return triplet.getValue2();
-		 }
-		 return null;
+		Triplet<Member, Book, LocalDate> triplet = borrowedBooks.get(book.getIsbn());
+		if (triplet != null) {
+			return triplet.getValue2();
+		}
+		return null;
 	}
-	
+
 	public boolean isMemberLate(Member member) {
 		if (member == null) {
-			throw new IllegalArgumentException("Member parameter is null");
+			throw new IllegalArgumentException("member parameter is null");
 		}
-		return borrowedBooks.entrySet()
-		          .stream()
-		          .filter(e-> member.equals(e.getValue().getValue0()) && member.isLate(e.getValue().getValue2()))
-		          .count() > 0;
-	} 
+		return borrowedBooks.entrySet().stream()
+				.anyMatch(e -> member.equals(e.getValue().getValue0()) && member.isLate(e.getValue().getValue2()));
+	}
 }
