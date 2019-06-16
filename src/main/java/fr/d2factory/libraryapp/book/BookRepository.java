@@ -35,6 +35,7 @@ public class BookRepository {
 			throw new IllegalArgumentException("Either book parameter or borowedAt parameter is null");
 		}
 		borrowedBooks.putIfAbsent(book, borrowedAt);
+		availableBooks.remove(book.getIsbn());
 	}
 
 	public LocalDate findBorrowedBookDate(Book book) {

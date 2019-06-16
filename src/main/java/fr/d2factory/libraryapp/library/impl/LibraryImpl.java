@@ -18,7 +18,11 @@ public class LibraryImpl implements Library {
 
 	@Override
 	public Book borrowBook(long isbnCode, Member member, LocalDate borrowedAt) throws HasLateBooksException {
-		return bookRepository.findBook(isbnCode);
+		Book book = bookRepository.findBook(isbnCode);
+		if (book != null) {
+			bookRepository.saveBookBorrow(book, borrowedAt);
+		}
+		return book;
 	}
 
 	@Override

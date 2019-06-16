@@ -56,9 +56,15 @@ public class LibraryTest {
 
 	@Test
 	public void borrowed_book_is_no_longer_available() {
+		Long isbn = 968787565445l;
+		LocalDate borrowingDate = LocalDate.now();
 		Member member = new StudentMember();
-		Book book = library.borrowBook(968787565442l, member, LocalDate.now());
-		assertNull("The book doesn't exist in the library", book);
+		Book book = library.borrowBook(isbn, member, borrowingDate);
+		assertNotNull("The book was borrowed", book);
+		Book unavailableBook = bookRepository.findBook(isbn);
+		assertNull("The book was removed from available book list", unavailableBook);
+		LocalDate bookBorrowingDate = bookRepository.findBorrowedBookDate(book);
+		assertEquals("The book was moved to barrowed book list", borrowingDate, bookBorrowingDate);
 	}
 
 	@Test
