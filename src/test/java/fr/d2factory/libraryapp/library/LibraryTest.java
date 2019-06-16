@@ -22,6 +22,7 @@ import fr.d2factory.libraryapp.book.BookRepository;
 import fr.d2factory.libraryapp.library.exception.BookIsNotAvailableException;
 import fr.d2factory.libraryapp.library.impl.LibraryImpl;
 import fr.d2factory.libraryapp.member.Member;
+import fr.d2factory.libraryapp.member.ResidentMember;
 import fr.d2factory.libraryapp.member.StudentMember;
 
 public class LibraryTest {
@@ -41,7 +42,7 @@ public class LibraryTest {
 				.collect(Collectors.joining());
 		List<Book> bookList = Arrays.asList(new Gson().fromJson(json, Book[].class));
 		bookRepository.addBooks(bookList);
-		
+
 		library = new LibraryImpl(bookRepository);
 	}
 
@@ -49,7 +50,7 @@ public class LibraryTest {
 	public void member_can_borrow_a_book_if_book_is_available() {
 		Long isbn = 968787565445l;
 		LocalDate borrowingDate = LocalDate.now();
-		Member member = new StudentMember();
+		Member member = new StudentMember(new BigDecimal("10"));
 		Book book = library.borrowBook(isbn, member, borrowingDate);
 		assertNotNull("The book exists in the library and it's borrowed", book);
 		assertEquals("The returned book has the demanded isbn", 968787565445l, book.getIsbn().getIsbnCode());
@@ -59,17 +60,26 @@ public class LibraryTest {
 		assertEquals("The book was moved to barrowed book list", borrowingDate, bookBorrowingDate);
 	}
 
-	@Test(expected=BookIsNotAvailableException.class)
+	@Test(expected = BookIsNotAvailableException.class)
 	public void borrowed_book_is_no_longer_available() {
 		Long isbn = 968787565445l;
-		Member member = new StudentMember();
+		Member member = new StudentMember(new BigDecimal("10"));
 		library.borrowBook(isbn, member, LocalDate.now());
 		library.borrowBook(isbn, member, LocalDate.now());
 	}
 
 	@Test
 	public void residents_are_taxed_10cents_for_each_day_they_keep_a_book() {
-		fail("Implement me");
+		Long isbn = 968787565445l;
+		int borrowingDays = 60;
+		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
+		BigDecimal initialWallet = new BigDecimal("10");
+		Member residentMember = new ResidentMember(initialWallet);
+		Book borrowedBook = library.borrowBook(isbn, residentMember, borrowingDate);
+		library.returnBook(borrowedBook, residentMember);
+		assertEquals("Resident was taxed 10 cents for each day he kept the book",
+				initialWallet.subtract(new BigDecimal(String.valueOf(0.1 * borrowingDays))),
+				residentMember.getWallet());
 	}
 
 	@Test

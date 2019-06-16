@@ -1,5 +1,7 @@
 package fr.d2factory.libraryapp.member;
 
+import java.math.BigDecimal;
+
 import fr.d2factory.libraryapp.library.Library;
 
 /**
@@ -10,7 +12,11 @@ public abstract class Member {
     /**
      * An initial sum of money the member has
      */
-    private float wallet;
+    protected BigDecimal wallet;
+    
+	protected Member(BigDecimal initialWallet) {
+		this.wallet = initialWallet;
+	}
 
     /**
      * The member should pay their books when they are returned to the library
@@ -19,11 +25,11 @@ public abstract class Member {
      */
     public abstract void payBook(int numberOfDays);
 
-    public float getWallet() {
+    public BigDecimal getWallet() {
         return wallet;
     }
 
-    public void setWallet(float wallet) {
+    public void setWallet(BigDecimal wallet) {
         this.wallet = wallet;
     }
 }

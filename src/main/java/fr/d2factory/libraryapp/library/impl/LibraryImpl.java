@@ -1,5 +1,6 @@
 package fr.d2factory.libraryapp.library.impl;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 import fr.d2factory.libraryapp.book.Book;
@@ -29,7 +30,8 @@ public class LibraryImpl implements Library {
 
 	@Override
 	public void returnBook(Book book, Member member) {
-		// TODO Auto-generated method stub
+		LocalDate borrowingDate = bookRepository.findBorrowedBookDate(book);
+		member.payBook((int)Duration.between(borrowingDate.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays());
 		
 	}
 
