@@ -16,6 +16,8 @@ public class StudentMember extends Member {
 		if (numberOfDays <= 30) {
 			if (isFirstYear) {
 				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * (numberOfDays - 15))));
+			} else {
+				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * numberOfDays)));
 			}
 		}
 		

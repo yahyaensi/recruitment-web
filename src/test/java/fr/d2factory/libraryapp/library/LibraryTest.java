@@ -98,20 +98,29 @@ public class LibraryTest {
 
 	@Test
 	public void students_pay_10_cents_the_first_30days() {
-		fail("Implement me");
+		Long isbn = 968787565445l;
+		int borrowingDays = 30;
+		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
+		BigDecimal initialWallet = new BigDecimal("10");
+		Member studentMember = new StudentMember(false, initialWallet);
+		Book borrowedBook = library.borrowBook(isbn, studentMember, borrowingDate);
+		library.returnBook(borrowedBook, studentMember);
+		assertEquals("Student payed 10 cents the first 30 days",
+				new BigDecimal("7.0"),
+				studentMember.getWallet());
 	}
 
 	@Test
 	public void students_in_1st_year_are_not_taxed_for_the_first_15days() {
 		Long isbn = 968787565445l;
-		int borrowingDays = 15;
+		int borrowingDays = 20;
 		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
 		BigDecimal initialWallet = new BigDecimal("10");
 		Member studentMember = new StudentMember(true, initialWallet);
 		Book borrowedBook = library.borrowBook(isbn, studentMember, borrowingDate);
 		library.returnBook(borrowedBook, studentMember);
 		assertEquals("Student in 1st year is not taxed for the first 15 days",
-				new BigDecimal("10.0"),
+				new BigDecimal("9.5"),
 				studentMember.getWallet());
 	}
 
