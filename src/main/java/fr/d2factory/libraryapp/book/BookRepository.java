@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.javatuples.Triplet;
+
+import fr.d2factory.libraryapp.member.Member;
+
 /**
  * The book repository emulates a database via 2 HashMaps
  */
@@ -15,7 +19,7 @@ public class BookRepository {
 	// We will consider that ISBN identifies at the same time the book and the copy
 	// as mentioned in the exercise description
 	private Map<ISBN, Book> availableBooks = new HashMap<>();
-	private Map<Book, LocalDate> borrowedBooks = new HashMap<>();
+	private Map<ISBN, Triplet<Member, Book, LocalDate>> borrowedBooks = new HashMap<>();
 
 	public void addBooks(List<Book> books) {
 		if (books == null) {
@@ -35,18 +39,32 @@ public class BookRepository {
 			throw new IllegalArgumentException("Book parameter is null");
 		}
 		availableBooks.putIfAbsent(book.getIsbn(), book);
-		borrowedBooks.remove(book);
+		borrowedBooks.remove(book.getIsbn());
 	}
 
-	public void saveBookBorrow(Book book, LocalDate borrowedAt) {
+	public void saveBookBorrow(Member member, Book book, LocalDate borrowedAt) {
 		if (book == null || borrowedAt == null) {
 			throw new IllegalArgumentException("Either book parameter or borowedAt parameter is null");
 		}
-		borrowedBooks.putIfAbsent(book, borrowedAt);
+		borrowedBooks.putIfAbsent(book.getIsbn(), new Triplet<>(member, book, borrowedAt));
 		availableBooks.remove(book.getIsbn());
 	}
 
 	public LocalDate findBorrowedBookDate(Book book) {
-		return borrowedBooks.get(book);
+		 Triplet<Member, Book, LocalDate> triplet = borrowedBooks.get(book.getIsbn());
+		 if (triplet != null) {
+			 return triplet.getValue2();
+		 }
+		 return null;
 	}
+	
+	public boolean isMemberLate(Member member) {
+		if (member == null) {
+			throw new IllegalArgumentException("Member parameter is null");
+		}
+		return borrowedBooks.entrySet()
+		          .stream()
+		          .filter(e-> member.equals(e.getValue().getValue0()) && member.isLate(e.getValue().getValue2()))
+		          .count() > 0;
+	} 
 }

@@ -1,6 +1,8 @@
 package fr.d2factory.libraryapp.library;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,6 +22,7 @@ import com.google.gson.Gson;
 import fr.d2factory.libraryapp.book.Book;
 import fr.d2factory.libraryapp.book.BookRepository;
 import fr.d2factory.libraryapp.library.exception.BookIsNotAvailableException;
+import fr.d2factory.libraryapp.library.exception.HasLateBooksException;
 import fr.d2factory.libraryapp.library.impl.LibraryImpl;
 import fr.d2factory.libraryapp.member.Member;
 import fr.d2factory.libraryapp.member.ResidentMember;
@@ -164,8 +167,11 @@ public class LibraryTest {
 		assertEquals("The returned book has the demanded isbn", 968787565445l, bookBorrowedAgain.getIsbn().getIsbnCode());
 	}
 
-	@Test
-	public void members_cannot_borrow_book_if_they_have_late_books() {
-		fail("Implement me");
+	@Test(expected = HasLateBooksException.class)
+	public void residents_cannot_borrow_book_if_they_have_late_books() {
+		LocalDate nowDate = LocalDate.now();
+		Member member = new ResidentMember(new BigDecimal("10"));
+		library.borrowBook(968787565445l, member, nowDate.minusDays(61));
+		library.borrowBook(3326456467846l, member, nowDate);
 	}
 }

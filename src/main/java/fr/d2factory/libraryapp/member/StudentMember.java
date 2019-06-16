@@ -1,11 +1,13 @@
 package fr.d2factory.libraryapp.member;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDate;
 
 public class StudentMember extends Member {
-	
+
 	private boolean isFirstYear;
-	
+
 	public StudentMember(boolean isFirstYear, BigDecimal initialWallet) {
 		super(initialWallet);
 		this.isFirstYear = isFirstYear;
@@ -26,7 +28,12 @@ public class StudentMember extends Member {
 				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * 30 + 0.15 * (numberOfDays - 30))));
 			}
 		}
-		
+
+	}
+
+	@Override
+	public boolean isLate(LocalDate borrowingDate) {
+		return (int) Duration.between(borrowingDate.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays() > 30;
 	}
 
 }
