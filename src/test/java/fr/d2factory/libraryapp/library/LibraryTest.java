@@ -174,4 +174,20 @@ public class LibraryTest {
 		library.borrowBook(968787565445l, member, nowDate.minusDays(61));
 		library.borrowBook(3326456467846l, member, nowDate);
 	}
+	
+	@Test(expected = HasLateBooksException.class)
+	public void students_in_1st_year_cannot_borrow_book_if_they_have_late_books() {
+		LocalDate nowDate = LocalDate.now();
+		Member member = new StudentMember(true, new BigDecimal("10"));
+		library.borrowBook(968787565445l, member, nowDate.minusDays(31));
+		library.borrowBook(3326456467846l, member, nowDate);
+	}
+	
+	@Test(expected = HasLateBooksException.class)
+	public void students_not_in_1st_year_cannot_borrow_book_if_they_have_late_books() {
+		LocalDate nowDate = LocalDate.now();
+		Member member = new StudentMember(false, new BigDecimal("10"));
+		library.borrowBook(968787565445l, member, nowDate.minusDays(31));
+		library.borrowBook(3326456467846l, member, nowDate);
+	}
 }
