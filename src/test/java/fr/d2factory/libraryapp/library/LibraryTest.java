@@ -1,21 +1,44 @@
 package fr.d2factory.libraryapp.library;
 
-import fr.d2factory.libraryapp.book.BookRepository;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.fail;
+import com.google.gson.Gson;
+
+import fr.d2factory.libraryapp.book.Book;
+import fr.d2factory.libraryapp.book.BookRepository;
+import fr.d2factory.libraryapp.library.impl.LibraryImpl;
 
 public class LibraryTest {
-    private Library library ;
+	
+    private Library library;
+    
     private BookRepository bookRepository;
+    
+    private ClassLoader loader = ClassLoader.getSystemClassLoader();
 
     @Before
-    public void setup(){
-        //TODO instantiate the library and the repository
-
-        //TODO add some test books (use BookRepository#addBooks)
-        //TODO to help you a file called books.json is available in src/test/resources
+    public void setup() throws IOException, URISyntaxException{
+        // instantiate the library and the repository
+    	library = new LibraryImpl();
+    	bookRepository = new BookRepository();
+    	
+    	// load test books from books.json
+    	String json = Files.lines(Paths.get(loader.getResource("books.json").toURI()))
+                .parallel()
+                .collect(Collectors.joining());
+    	List<Book> bookList = Arrays.asList(new Gson().fromJson(json, Book[].class));
+    	bookRepository.addBooks(bookList);
     }
 
     @Test
