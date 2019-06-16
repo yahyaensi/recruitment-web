@@ -1,8 +1,6 @@
 package fr.d2factory.libraryapp.library;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -58,7 +56,9 @@ public class LibraryTest {
 
 	@Test
 	public void borrowed_book_is_no_longer_available() {
-		fail("Implement me");
+		Member member = new StudentMember();
+		Book book = library.borrowBook(968787565442l, member, LocalDate.now());
+		assertNull("The book doesn't exist in the library", book);
 	}
 
 	@Test
