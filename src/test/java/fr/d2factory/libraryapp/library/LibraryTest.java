@@ -78,7 +78,21 @@ public class LibraryTest {
 		Book borrowedBook = library.borrowBook(isbn, residentMember, borrowingDate);
 		library.returnBook(borrowedBook, residentMember);
 		assertEquals("Resident was taxed 10 cents for each day he kept the book",
-				initialWallet.subtract(new BigDecimal(String.valueOf(0.1 * borrowingDays))),
+				new BigDecimal("4.0"),
+				residentMember.getWallet());
+	}
+	
+	@Test
+	public void residents_pay_20cents_for_each_day_they_keep_a_book_after_the_initial_60days() {
+		Long isbn = 968787565445l;
+		int borrowingDays = 70;
+		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
+		BigDecimal initialWallet = new BigDecimal("10");
+		Member residentMember = new ResidentMember(initialWallet);
+		Book borrowedBook = library.borrowBook(isbn, residentMember, borrowingDate);
+		library.returnBook(borrowedBook, residentMember);
+		assertEquals("Resident was taxed 10 cents for each day he kept the book",
+				new BigDecimal("2.0"),
 				residentMember.getWallet());
 	}
 
@@ -94,11 +108,6 @@ public class LibraryTest {
 
 	@Test
 	public void students_pay_15cents_for_each_day_they_keep_a_book_after_the_initial_30days() {
-		fail("Implement me");
-	}
-
-	@Test
-	public void residents_pay_20cents_for_each_day_they_keep_a_book_after_the_initial_60days() {
 		fail("Implement me");
 	}
 
