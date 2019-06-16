@@ -50,7 +50,7 @@ public class LibraryTest {
 	public void member_can_borrow_a_book_if_book_is_available() {
 		Long isbn = 968787565445l;
 		LocalDate borrowingDate = LocalDate.now();
-		Member member = new StudentMember(new BigDecimal("10"));
+		Member member = new ResidentMember(new BigDecimal("10"));
 		Book book = library.borrowBook(isbn, member, borrowingDate);
 		assertNotNull("The book exists in the library and it's borrowed", book);
 		assertEquals("The returned book has the demanded isbn", 968787565445l, book.getIsbn().getIsbnCode());
@@ -63,7 +63,7 @@ public class LibraryTest {
 	@Test(expected = BookIsNotAvailableException.class)
 	public void borrowed_book_is_no_longer_available() {
 		Long isbn = 968787565445l;
-		Member member = new StudentMember(new BigDecimal("10"));
+		Member member = new ResidentMember(new BigDecimal("10"));
 		library.borrowBook(isbn, member, LocalDate.now());
 		library.borrowBook(isbn, member, LocalDate.now());
 	}
@@ -91,7 +91,7 @@ public class LibraryTest {
 		Member residentMember = new ResidentMember(initialWallet);
 		Book borrowedBook = library.borrowBook(isbn, residentMember, borrowingDate);
 		library.returnBook(borrowedBook, residentMember);
-		assertEquals("Resident was taxed 10 cents for each day he kept the book",
+		assertEquals("Resident payed 20 cents for each dat he kept the book after initial 60 days",
 				new BigDecimal("2.0"),
 				residentMember.getWallet());
 	}
@@ -103,7 +103,16 @@ public class LibraryTest {
 
 	@Test
 	public void students_in_1st_year_are_not_taxed_for_the_first_15days() {
-		fail("Implement me");
+		Long isbn = 968787565445l;
+		int borrowingDays = 15;
+		LocalDate borrowingDate = LocalDate.now().minusDays(borrowingDays);
+		BigDecimal initialWallet = new BigDecimal("10");
+		Member studentMember = new StudentMember(true, initialWallet);
+		Book borrowedBook = library.borrowBook(isbn, studentMember, borrowingDate);
+		library.returnBook(borrowedBook, studentMember);
+		assertEquals("Student in 1st year is not taxed for the first 15 days",
+				new BigDecimal("10.0"),
+				studentMember.getWallet());
 	}
 
 	@Test

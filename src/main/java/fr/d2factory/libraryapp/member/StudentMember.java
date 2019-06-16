@@ -4,13 +4,20 @@ import java.math.BigDecimal;
 
 public class StudentMember extends Member {
 	
-	public StudentMember(BigDecimal initialWallet) {
+	private boolean isFirstYear;
+	
+	public StudentMember(boolean isFirstYear, BigDecimal initialWallet) {
 		super(initialWallet);
+		this.isFirstYear = isFirstYear;
 	}
 
 	@Override
 	public void payBook(int numberOfDays) {
-		// TODO Auto-generated method stub
+		if (numberOfDays <= 30) {
+			if (isFirstYear) {
+				wallet = wallet.subtract(new BigDecimal(String.valueOf(0.1 * (numberOfDays - 15))));
+			}
+		}
 		
 	}
 
